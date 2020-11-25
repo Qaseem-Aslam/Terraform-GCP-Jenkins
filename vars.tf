@@ -1,0 +1,17 @@
+variable "credentials" {}
+variable "project" {}
+variable "region" {}
+variable "cluster_name" {}
+variable "machine_type" {}
+variable "disk_size_gb" {}
+variable "image_name" {}
+variable "diskNameFile" {}
+variable "js_uuid" {}
+variable "mnt_drive_id" {}
+variable "gh_admin_password" {}
+variable "gh_admin_user" {}
+variable "j_admin_user" {}
+variable "j_admin_password" {}
+variable "ssh_user" {}
+variable "pub_key" {}
+variable "private_key" {}
