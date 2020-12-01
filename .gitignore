@@ -3,3 +3,4 @@ env.sh
 terraform.tfvars
 add_disk/disk*
 .dockerignore
+*kubeconfig*
