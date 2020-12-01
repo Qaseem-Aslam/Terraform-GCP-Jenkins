@@ -10,8 +10,11 @@ variable "js_uuid" {}
 variable "mnt_drive_id" {}
 variable "gh_admin_password" {}
 variable "gh_admin_user" {}
+variable "dh_admin_password" {}
+variable "dh_admin_user" {}
 variable "j_admin_user" {}
 variable "j_admin_password" {}
 variable "ssh_user" {}
 variable "pub_key" {}
 variable "private_key" {}
+variable "kubeconfig" {}

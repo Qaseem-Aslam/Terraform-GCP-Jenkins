@@ -1,0 +1,18 @@
+jobs:
+  - script: >
+      pipelineJob('Job_DSL_Seed') {
+          definition {
+              triggers {
+                  cron('H/5 * * * *')
+              }
+              cpsScm {
+                  scm {
+                    git {
+                        remote { url 'https://github.com/janpreet/Jenkins-Job-DSL.git' }
+                        branch '*/main'
+                        extensions {}
+                    }
+                  }
+              }
+          }
+      }

@@ -31,7 +31,15 @@ data "template_file" "masterscript" {
     js_uuid = var.js_uuid
     mnt_drive_id = var.mnt_drive_id
     mnt_drive_name = data.local_file.diskName.content
+    j_admin_user = var.j_admin_user
+    j_admin_password = var.j_admin_password
+    j_url = google_compute_address.static.address    
   }
+}
+
+# Static IP for Jenkins
+resource "google_compute_address" "static" {
+  name = "ipv4-address"
 }
 
 # Jenkins Config
@@ -42,6 +50,10 @@ data "template_file" "jenkinsconfig" {
     j_admin_password = var.j_admin_password
     gh_admin_user = var.gh_admin_user
     gh_admin_password = var.gh_admin_password
+    dh_admin_user = var.dh_admin_user
+    dh_admin_password = var.dh_admin_password
+    j_url = google_compute_address.static.address
+    secretBytes = filebase64(var.kubeconfig) 
   }
 }
 
@@ -61,31 +73,29 @@ resource "google_compute_instance" "jenkins_master" {
   }     
   network_interface {
     network = "default"
-    access_config {}
+    access_config {
+      nat_ip = google_compute_address.static.address
+    }
   }
   service_account {
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
-
   metadata = {
     sshKeys = "${var.ssh_user}:${file(var.pub_key)}"
   }
-
+  connection {
+      type = "ssh"
+      user = var.ssh_user
+      private_key = file(var.private_key)
+      host = google_compute_address.static.address
+    } 
   provisioner "file" {
     content = data.template_file.jenkinsconfig.rendered
     destination = "/tmp/jenkins.yml" 
-    connection {
-        type = "ssh"
-        user = var.ssh_user
-        private_key = file(var.private_key)
-        host = self.network_interface[0].access_config[0].nat_ip
-      }  
   }
-
+  provisioner "file" {
+    source = var.kubeconfig
+    destination = "/tmp/kubeconfig" 
+  }  
   metadata_startup_script = data.template_file.masterscript.rendered
-  
-}
-
-output "secret" {
-  value = data.template_file.masterscript.rendered
 }
