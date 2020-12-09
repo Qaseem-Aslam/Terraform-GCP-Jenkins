@@ -20,20 +20,14 @@ resource "google_compute_firewall" "www" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-data "local_file" "diskName" {
-    filename = "./add_disk/${var.diskNameFile}"
-}
-
 # Master startup script
 data "template_file" "masterscript" {
   template = file("./template/master.sh.tpl")
   vars = {
-    js_uuid = var.js_uuid
-    mnt_drive_id = var.mnt_drive_id
-    mnt_drive_name = data.local_file.diskName.content
     j_admin_user = var.j_admin_user
     j_admin_password = var.j_admin_password
-    j_url = google_compute_address.static.address    
+    j_url = google_compute_address.static.address  
+    jenkins_upload = var.jenkins_upload  
   }
 }
 
@@ -68,9 +62,6 @@ resource "google_compute_instance" "jenkins_master" {
       image = var.image_name
     }
   }  
-  attached_disk {
-    source=data.local_file.diskName.content
-  }     
   network_interface {
     network = "default"
     access_config {
@@ -91,11 +82,11 @@ resource "google_compute_instance" "jenkins_master" {
     } 
   provisioner "file" {
     content = data.template_file.jenkinsconfig.rendered
-    destination = "/tmp/jenkins.yml" 
+    destination = "/${var.jenkins_upload}/jenkins.yml" 
   }
   provisioner "file" {
     source = var.kubeconfig
-    destination = "/tmp/kubeconfig" 
+    destination = "/${var.jenkins_upload}/kubeconfig" 
   }  
   metadata_startup_script = data.template_file.masterscript.rendered
 }

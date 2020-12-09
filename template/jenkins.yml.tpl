@@ -27,6 +27,7 @@ jenkins:
             image: "janpreet/jenkins-slave"
           labelString: "all-in-one"
           name: "docker-slave"
+          pullStrategy: PULL_ALWAYS          
           remoteFs: "/home/jenkins"                    
 
   crumbIssuer:
