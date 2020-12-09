@@ -5,9 +5,7 @@ variable "cluster_name" {}
 variable "machine_type" {}
 variable "disk_size_gb" {}
 variable "image_name" {}
-variable "diskNameFile" {}
-variable "js_uuid" {}
-variable "mnt_drive_id" {}
+variable "jenkins_upload" {}
 variable "gh_admin_password" {}
 variable "gh_admin_user" {}
 variable "dh_admin_password" {}
